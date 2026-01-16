@@ -1,0 +1,254 @@
+from google.colab import files
+from ultralytics import YOLO
+from IPython.display import Image, display
+import os
+
+# 🔹 1. Upload image from device
+uploaded = files.upload()
+file_name = list(uploaded.keys())[0]  # get uploaded file name
+
+# 🔹 2. Load your trained model
+model = YOLO('/content/drive/MyDrive/cattle/weights/best.pt')
+
+# 🔹 3. Define breed information (all breeds included)
+breed_info = {
+    "Alambadi": {
+        "Native": "Tamil Nadu, India",
+        "Comments": "Good milk yield, drought-resistant, hardy and adaptable to dry conditions",
+        "Productivity": "Moderate milk yield; around 6-8 liters/day",
+        "Life_span": "12-15 years"
+    },
+    "Amritmahal": {
+        "Native": "Karnataka, India",
+        "Comments": "Strong draught breed, used for plowing and transport",
+        "Productivity": "Low milk yield; primarily draught purpose",
+        "Life_span": "15-18 years"
+    },
+    "Ayrshire": {
+        "Native": "Scotland",
+        "Comments": "Dairy breed, high milk quality, good fat content",
+        "Productivity": "Milk yield 4,500-6,500 liters/year",
+        "Life_span": "12-14 years"
+    },
+    "Bargur": {
+        "Native": "Tamil Nadu, India",
+        "Comments": "Well-muscled, dual-purpose; draught and meat",
+        "Productivity": "Moderate milk yield; 4-6 liters/day",
+        "Life_span": "12-15 years"
+    },
+    "Bhadawari": {
+        "Native": "Uttar Pradesh/Madhya Pradesh, India",
+        "Comments": "Specialized for water buffalo milk, disease-resistant",
+        "Productivity": "High-fat milk; 2,000-2,500 liters/year",
+        "Life_span": "15-20 years"
+    },
+    "Dangi": {
+        "Native": "Maharashtra, India",
+        "Comments": "Adapted to hilly regions, hardy and strong",
+        "Productivity": "Low milk yield; primarily draught",
+        "Life_span": "12-15 years"
+    },
+    "Deoni": {
+        "Native": "Maharashtra/Karnataka, India",
+        "Comments": "Dual-purpose: milk and draught, adaptable",
+        "Productivity": "Moderate milk yield; 8-12 liters/day",
+        "Life_span": "12-15 years"
+    },
+    "Gir": {
+        "Native": "Gujarat, India",
+        "Comments": "High milk yield, disease-resistant, long-lived",
+        "Productivity": "Milk yield 15-20 liters/day; fat 4-5%",
+        "Life_span": "15-18 years"
+    },
+    "Hallikar": {
+        "Native": "Karnataka, India",
+        "Comments": "Excellent draught breed, strong endurance",
+        "Productivity": "Low milk yield; mainly for draught",
+        "Life_span": "14-16 years"
+    },
+    "Hariana": {
+        "Native": "Haryana, India",
+        "Comments": "Good milk yield, drought-resistant, hardy",
+        "Productivity": "Milk yield 10-15 liters/day",
+        "Life_span": "12-15 years"
+    },
+    "Jaffrabadi": {
+        "Native": "Gujarat, India",
+        "Comments": "Heavy dairy breed, robust frame",
+        "Productivity": "Milk yield 8-12 liters/day",
+        "Life_span": "14-16 years"
+    },
+    "Jersey": {
+        "Native": "Jersey, Channel Islands",
+        "Comments": "Small-sized, high-fat milk, docile temperament",
+        "Productivity": "Milk yield 20-25 liters/day; fat 5-6%",
+        "Life_span": "12-15 years"
+    },
+    "Kangayam": {
+        "Native": "Tamil Nadu, India",
+        "Comments": "Strong draught breed, heat-tolerant",
+        "Productivity": "Low milk yield; primary use draught",
+        "Life_span": "14-16 years"
+    },
+    "Kankrej": {
+        "Native": "Rajasthan/Gujarat, India",
+        "Comments": "Dual-purpose breed, hardy, disease-resistant",
+        "Productivity": "Milk yield 8-12 liters/day",
+        "Life_span": "14-16 years"
+    },
+    "Kasargod": {
+        "Native": "Kerala, India",
+        "Comments": "Small size, agile, adapted to forested areas",
+        "Productivity": "Low milk yield; mainly draught",
+        "Life_span": "12-14 years"
+    },
+    "Kenkatha": {
+        "Native": "Madhya Pradesh, India",
+        "Comments": "Draught animal, heat-resistant, hardy",
+        "Productivity": "Low milk yield",
+        "Life_span": "12-14 years"
+    },
+    "Kherigarh": {
+        "Native": "Uttar Pradesh, India",
+        "Comments": "Dual-purpose, hardy, medium size",
+        "Productivity": "Moderate milk yield",
+        "Life_span": "12-15 years"
+    },
+    "Khillari": {
+        "Native": "Maharashtra, India",
+        "Comments": "Excellent draught bullocks, hardy, lean",
+        "Productivity": "Low milk yield; mainly draught",
+        "Life_span": "14-16 years"
+    },
+    "Krishna_Valley": {
+        "Native": "Karnataka/Maharashtra, India",
+        "Comments": "Heavy draught breed, strong frame",
+        "Productivity": "Low milk yield; draught purpose",
+        "Life_span": "14-16 years"
+    },
+    "Mehsana": {
+        "Native": "Gujarat, India",
+        "Comments": "High-yield dairy buffalo, adaptable",
+        "Productivity": "Milk yield 12-15 liters/day; fat 6-7%",
+        "Life_span": "15-18 years"
+    },
+    "Murrah": {
+        "Native": "Haryana/Punjab, India",
+        "Comments": "Famous dairy buffalo, high milk yield, hardy",
+        "Productivity": "Milk yield 15-20 liters/day; fat 7-8%",
+        "Life_span": "15-18 years"
+    },
+    "Nagori": {
+        "Native": "Rajasthan, India",
+        "Comments": "Dual-purpose: milk and draught, hardy",
+        "Productivity": "Milk yield 6-10 liters/day",
+        "Life_span": "12-14 years"
+    },
+    "Nagpuri": {
+        "Native": "Maharashtra, India",
+        "Comments": "Dual-purpose breed, adapted to heat",
+        "Productivity": "Milk yield 8-10 liters/day",
+        "Life_span": "12-15 years"
+    },
+    "Nili_Ravi": {
+        "Native": "Punjab, India/Pakistan",
+        "Comments": "High milk-yield buffalo, docile, large frame",
+        "Productivity": "Milk yield 12-18 liters/day; fat 6-8%",
+        "Life_span": "15-18 years"
+    },
+    "Nimari": {
+        "Native": "Madhya Pradesh, India",
+        "Comments": "Draught breed, hardy, heat-resistant",
+        "Productivity": "Low milk yield",
+        "Life_span": "12-14 years"
+    },
+    "Ongole": {
+        "Native": "Andhra Pradesh, India",
+        "Comments": "Heavy draught breed, disease-resistant",
+        "Productivity": "Low milk yield; mainly draught",
+        "Life_span": "14-16 years"
+    },
+    "Pulikulam": {
+        "Native": "Tamil Nadu, India",
+        "Comments": "Draught breed, medium frame",
+        "Productivity": "Low milk yield",
+        "Life_span": "12-14 years"
+    },
+    "Rathi": {
+        "Native": "Rajasthan, India",
+        "Comments": "Dual-purpose, hardy, adaptable",
+        "Productivity": "Milk yield 8-12 liters/day",
+        "Life_span": "12-15 years"
+    },
+    "Red_Dane": {
+        "Native": "Denmark",
+        "Comments": "Exotic dairy breed, good temperament",
+        "Productivity": "Milk yield 7,000-9,000 liters/year",
+        "Life_span": "10-12 years"
+    },
+    "Red_Sindhi": {
+        "Native": "Pakistan/India",
+        "Comments": "High milk-yield, hardy, disease-resistant",
+        "Productivity": "Milk yield 10-15 liters/day",
+        "Life_span": "14-16 years"
+    },
+    "Sahiwal": {
+        "Native": "Punjab/Haryana, India",
+        "Comments": "Famous dairy breed, heat-tolerant",
+        "Productivity": "Milk yield 12-20 liters/day; fat 4-5%",
+        "Life_span": "14-16 years"
+    },
+    "Surti": {
+        "Native": "Gujarat, India",
+        "Comments": "Dairy breed, medium size, high-fat milk",
+        "Productivity": "Milk yield 8-12 liters/day; fat 5-6%",
+        "Life_span": "14-16 years"
+    },
+    "Tharparkar": {
+        "Native": "Rajasthan, India",
+        "Comments": "Dual-purpose, hardy, draught and milk",
+        "Productivity": "Milk yield 10-15 liters/day",
+        "Life_span": "12-15 years"
+    },
+    "Umblachery": {
+        "Native": "Tamil Nadu, India",
+        "Comments": "Draught breed, adapted to humid climate",
+        "Productivity": "Low milk yield",
+        "Life_span": "12-14 years"
+    },
+    "Vechur": {
+        "Native": "Kerala, India",
+        "Comments": "Smallest cattle breed, hardy, low maintenance",
+        "Productivity": "Milk yield 2-3 liters/day; high adaptability",
+        "Life_span": "12-14 years"
+    }
+}
+
+
+# 🔹 4. Run inference and save annotated image
+results = model.predict(source=file_name, conf=0.25, save=True)
+
+# The YOLO model saves the annotated image automatically in results[0].save_dir
+annotated_image_path = os.path.join(results[0].save_dir, os.path.basename(file_name))
+print(f"Annotated image saved at: {annotated_image_path}")
+
+# 🔹 5. Display the annotated image
+display(Image(filename=annotated_image_path))
+
+# 🔹 6. Print detected breeds info neatly
+print("\nDetected Breeds Information:\n")
+detected_classes = set()
+for result in results:
+    for box in result.boxes:
+        cls_id = int(box.cls[0])
+        cls_name = model.names[cls_id]
+        if cls_name not in detected_classes:
+            detected_classes.add(cls_name)
+            info = breed_info.get(cls_name, "No info available")
+            print(f"Breed: {cls_name}")
+            if info != "No info available":
+                for k, v in info.items():
+                    print(f"  {k}: {v}")
+            else:
+                print("  No info available")
+            print()
