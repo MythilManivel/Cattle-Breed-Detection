@@ -48,12 +48,6 @@ breed_info = {
         "Productivity": "Low milk yield; primarily draught",
         "Life_span": "12-15 years"
     },
-    "Deoni": {
-        "Native": "Maharashtra/Karnataka, India",
-        "Comments": "Dual-purpose: milk and draught, adaptable",
-        "Productivity": "Moderate milk yield; 8-12 liters/day",
-        "Life_span": "12-15 years"
-    },
     "Gir": {
         "Native": "Gujarat, India",
         "Comments": "High milk yield, disease-resistant, long-lived",
